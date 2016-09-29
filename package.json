@@ -1,0 +1,28 @@
+{
+    "author": "eli@zanycadence.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "watchface_tutorial",
+    "pebble": {
+        "capabilities": [
+            "location",
+            "health"
+        ],
+        "displayName": "watchface_tutorial",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "rocky",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "basalt"
+        ],
+        "uuid": "02f04106-3439-43d5-86d2-3e44aea27d68",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
