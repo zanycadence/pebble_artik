@@ -1,24 +1,23 @@
 var rocky = require('rocky');
-var temperature;
-var timeSinceLast = 5;
+var messages = [];
+var timeSinceLast = 1;
+var messageNum = 0;
+var firstRun = true;
 
 rocky.on('message', function(event){
   var message = event.data;
-  
-  if (message.temperature) {
-    temperature = message.temperature;
-    rocky.requestDraw();
-  }
+  messages = message.messages;
+  console.log("received messages... : ");
+  console.log(messages[0]);
+  rocky.requestDraw();
 });
 
 
-function drawTemp(ctx, temp){
-  var tempString = 'TI SensorTag: ' + temp.fahrenheit + '°F ';
-  
+function drawMessage(ctx, message){
   ctx.fillStyle = 'lightgray';
   ctx.textAlign = 'center';
   ctx.font = '14px Gothic';
-  ctx.fillText(tempString, ctx.canvas.unobstructedWidth/2, 2);
+  ctx.fillText(message, ctx.canvas.unobstructedWidth/2, 2);
 }
 
 
@@ -47,14 +46,26 @@ function drawHand(ctx, cx, cy, angle, length, color) {
 }
 
 rocky.on('draw', function(event) {
+  if (firstRun){
+    firstRun = false;
+    rocky.postMessage({'fetch': true, 'post': true});
+  }
+  
+  if (messages.length > 0){
+    messageNum = (messageNum + 1) % messages.length;
+  } else {
+    messageNum = 0;
+  }
+  console.log("message number : " + messageNum);
+  console.log("messages length : " + messages.length);
   var ctx = event.context;
   var d = new Date();
 
   // Clear the screen
   ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
   
-  if (temperature){
-    drawTemp(ctx, temperature);
+  if (messages.length > 0){
+    drawMessage(ctx, messages[messageNum]);
   }
   
   // Determine the width and height of the display
@@ -86,12 +97,12 @@ rocky.on('draw', function(event) {
 
 rocky.on('minutechange', function(event) {
   timeSinceLast++;
-  if (timeSinceLast >= 5){    
+  if (timeSinceLast >= 15){    
     rocky.postMessage({'fetch': true, 'post': true});
     timeSinceLast = 0;
   }
   
-  
   // Request the screen to be redrawn on next pass
   rocky.requestDraw();
 });
+
